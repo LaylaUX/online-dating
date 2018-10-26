@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 #Creating a dataframe and exploring the data
 df = pd.read_csv("profiles.csv")
-print(df.columns.values)
+df.columns.values
 
 #%%
 df.essay0.head()
@@ -94,15 +94,30 @@ m.income.value_counts()
 f.income.value_counts()
 
 #%%
-m.drop(columns=['sex'])
-f.drop(columns=['sex'])
+m = m.drop(columns=['sex'])
+f = f.drop(columns=['sex'])
 
 # Augmenting data - transforming body-type to body-image
 # A note on methodology: 
 # I assgined labels according to the relative positive/negative connotation of body-type labels
 # This was an unscientific process based on my expeirence as a fiction author
+# 2 = curvy, fit, thin, athletic, full-figured, jacked
+# 1 = average, a little extra, skinny
+# 0 = used up, overweight, rather not say
 
 #%%
 
+body_image_mapping = {"average": 1, "curvy": 2, "fit": 2, "thin": 2, "athletic": 2, "full figured": 2, "a little extra": 1, "skinny": 1, "jacked": 2, "used up": 0, "overweight": 0, "rather not say": 0}
+
+f["body_image"] = f.body_type.map(body_image_mapping)
+
+#%%
+f.columns.values
+f.head()
+
+#%%
+m["body_image"] = m.body_type.map(body_image_mapping)
+m.columns.values
+m.head()
 
 # Normalizing data
