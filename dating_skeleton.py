@@ -23,7 +23,7 @@ plt.ylabel("Frequency")
 plt.xlim(16, 80)
 plt.show()
 
-# Q: Is there a relationship between (self-perceptioon of) body-type and income?
+# Q: Is there a relationship between body-image and income?
 
 # Taking a look at the body type and income type distributions...
 #%%
@@ -42,15 +42,67 @@ body_and_income = df[['sex', 'body_type', 'income']].copy()
 # Checking to make sure that worked (it did)
 print(body_and_income.columns.values)
 
+#Creating two new datarames, one each for m and f
 #%%
 f = body_and_income.loc[df['sex'] == 'f']
-
-# Checking to see if it worked (Yup, looks good)
 f.columns.values
 f.count
-body_and_income.count
 
 #%%
 m = body_and_income.loc[df['sex'] == 'm']
 m.columns.values
 m.count
+
+#cleaning the data
+#%%
+m = m.dropna()
+m.count
+m.columns.values
+
+#%%
+m_undisclosed_income = m.loc[m['income'] == -1]
+m_undisclosed_income.count
+
+#%%
+m = m.loc[m['income'] != -1]
+m.count
+
+#%%
+f = f.dropna()
+f.count
+f.columns.values
+
+#%%
+f_undisclosed_income = f.loc[f['income'] == -1]
+f_undisclosed_income.count
+
+#%%
+f = f.loc[f['income'] != -1]
+f.count
+
+# Taking a look at the body-type and income splits in the m and f dataframes
+#%%
+m.body_type.value_counts()
+
+#%%
+f.body_type.value_counts()
+
+#%%
+m.income.value_counts()
+
+#%%
+f.income.value_counts()
+
+#%%
+m.drop(columns=['sex'])
+f.drop(columns=['sex'])
+
+# Augmenting data - transforming body-type to body-image
+# A note on methodology: 
+# I assgined labels according to the relative positive/negative connotation of body-type labels
+# This was an unscientific process based on my expeirence as a fiction author
+
+#%%
+
+
+# Normalizing data
