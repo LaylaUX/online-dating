@@ -135,6 +135,8 @@ plt.ylabel("Body-image")
 plt.title('Women')
 plt.show()
 
+# As expected, the men's graph is much more distributed as to income (x-axis)
+# There's also more data for men, which makes for a busier graph
 
 # Normalizing data
 #%%
@@ -151,4 +153,42 @@ Fx = f_data.values
 min_max_scaler = preprocessing.MinMaxScaler()
 Fx_scaled = min_max_scaler.fit_transform(Fx)
 
+#%%
+m_data = pd.DataFrame(Mx_scaled, columns=m_data.columns)
+f_data = pd.DataFrame(Fx_scaled, columns=f_data.columns)
 
+m_data.head()
+#%%
+f_data.head()
+
+# Ploting normalized data
+#%%
+plt.plot(f_data['income'], f_data['body_image'])
+plt.xlabel("Income")
+plt.ylabel("Body-image")
+plt.title('Women - scaled')
+plt.show()
+
+#%%
+plt.plot(m_data['income'], m_data['body_image'])
+plt.xlabel("Income")
+plt.ylabel("Body-image")
+plt.title('Men - scaled')
+plt.show()
+
+# The normalized data graphs in the same way as the original data.
+
+# Adding another column:
+# The median income for 2012 (the year of this dataset) was $28,213
+# I was unable to find seperate data for men and women's average earnings.
+#%%
+def income_classifier(array):
+    income_class = []
+    for person in range(len(array)):
+        if 'income' >= 28213:
+            income_class = 1
+        elif 'income' < 28213:
+            income_class = 0
+    income_class.append(income_class)
+
+print(income_class)
