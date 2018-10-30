@@ -120,4 +120,35 @@ m["body_image"] = m.body_type.map(body_image_mapping)
 m.columns.values
 m.head()
 
+#%%
+# Taking a look at preliminary graphs
+plt.plot(m['income'], m['body_image'])
+plt.xlabel("Income")
+plt.ylabel("Body-image")
+plt.title('Men')
+plt.show()
+
+#%%
+plt.plot(f['income'], f['body_image'])
+plt.xlabel("Income")
+plt.ylabel("Body-image")
+plt.title('Women')
+plt.show()
+
+
 # Normalizing data
+#%%
+from sklearn.preprocessing import MinMaxScaler
+
+m_data = m[['income', 'body_image']]
+Mx = m_data.values
+min_max_scaler = preprocessing.MinMaxScaler()
+Mx_scaled = min_max_scaler.fit_transform(Mx)
+
+#%%
+f_data = f[['income', 'body_image']]
+Fx = f_data.values
+min_max_scaler = preprocessing.MinMaxScaler()
+Fx_scaled = min_max_scaler.fit_transform(Fx)
+
+
