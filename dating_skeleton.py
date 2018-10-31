@@ -108,17 +108,32 @@ f = f.drop(columns=['sex'])
 #%%
 
 body_image_mapping = {"average": 1, "curvy": 2, "fit": 2, "thin": 2, "athletic": 2, "full figured": 2, "a little extra": 1, "skinny": 1, "jacked": 2, "used up": 0, "overweight": 0, "rather not say": 0}
-
 f["body_image"] = f.body_type.map(body_image_mapping)
 
 #%%
-f.columns.values
-f.head()
+m["body_image"] = m.body_type.map(body_image_mapping)
+
+# Income-mapping: I've assigned numerical classes to income based on the following:
+# The The median income for 2012 (the year of this dataset) was $28,213, so
+# For $0 - 20,000, income class = 0 (below the meadian income)
+# 20,0001 - 99,999, income class = 1
+# 100,000 - 999,999, income class = 2
+# 1,000,000+, income class = 3
+# Again, these divisions were somewhat arbitrary
 
 #%%
-m["body_image"] = m.body_type.map(body_image_mapping)
+income_mapping = {20000: 0, 30000: 1, 40000: 1, 50000: 1, 60000: 1, 70000: 1,
+                  80000: 1, 100000: 2, 150000: 2, 250000: 2, 500000: 2, 1000000: 3}
+
+m["income_class"] = m.income.map(income_mapping)
+
 m.columns.values
 m.head()
+
+#%%
+f["income_class"] = f.income.map(income_mapping)
+f.columns.values
+f.head()
 
 #%%
 # Taking a look at preliminary graphs
@@ -142,15 +157,15 @@ plt.show()
 #%%
 from sklearn.preprocessing import MinMaxScaler
 
-m_data = m[['income', 'body_image']]
+m_data = m[['income', 'body_image', 'income_class']]
 Mx = m_data.values
-min_max_scaler = preprocessing.MinMaxScaler()
+min_max_scaler = MinMaxScaler()
 Mx_scaled = min_max_scaler.fit_transform(Mx)
 
 #%%
-f_data = f[['income', 'body_image']]
+f_data = f[['income', 'body_image', 'income_class']]
 Fx = f_data.values
-min_max_scaler = preprocessing.MinMaxScaler()
+min_max_scaler = MinMaxScaler()
 Fx_scaled = min_max_scaler.fit_transform(Fx)
 
 #%%
@@ -178,17 +193,22 @@ plt.show()
 
 # The normalized data graphs in the same way as the original data.
 
-# Adding another column:
-# The median income for 2012 (the year of this dataset) was $28,213
-# I was unable to find seperate data for men and women's average earnings.
+# Taking a look at the graphs using income class, instead
 #%%
-def income_classifier(array):
-    income_class = []
-    for person in range(len(array)):
-        if 'income' >= 28213:
-            income_class = 1
-        elif 'income' < 28213:
-            income_class = 0
-    income_class.append(income_class)
+plt.plot(f_data['income_class'], f_data['body_image'])
+plt.xlabel("Income Class")
+plt.ylabel("Body-image")
+plt.title('Women - scaled')
+plt.show()
 
-print(income_class)
+#%%
+plt.plot(m_data['income_class'], m_data['body_image'])
+plt.xlabel("Income Class")
+plt.ylabel("Body-image")
+plt.title('Men - scaled')
+plt.show()
+
+# As might be expected, the graphs now create a geometic pattern, with nodes
+# I suspect, from looking at these graphs that it will not be possible to predict income based on body_image, or visa versa
+
+ 
