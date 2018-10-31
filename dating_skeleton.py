@@ -211,4 +211,67 @@ plt.show()
 # As might be expected, the graphs now create a geometic pattern, with nodes
 # I suspect, from looking at these graphs that it will not be possible to predict income based on body_image, or visa versa
 
- 
+ # Performing multiple linear regression:
+#%%
+
+mX = m_data['body_image']
+my = m_data['income']
+
+fX = f_data['body_image']
+fy = f_data['income']
+
+#%%
+from sklearn import linear_model
+from sklearn.model_selection import train_test_split
+
+mX_train, mX_test, my_train, my_test = train_test_split(mX, my, test_size=0.2, random_state=1)
+
+mX_train, mX_val, my_train, my_val = train_test_split(mX_train, my_train, test_size=0.2, random_state=1)
+
+regr = linear_model.LinearRegression()
+
+model=regr.fit(mX_train, my_train)
+
+my_predict = mlr.predict(mX_test)
+
+
+print("Train score:")
+print(mlr.score(mX_train, my_train))
+print("Test score:")
+print(mlr.score(mX_test, my_test))
+
+residuals = my_predict - my_test
+
+plt.scatter(my_predict, residuals, alpha=0.4)
+plt.title('Residual Analysis')
+
+plt.show()
+
+#%%
+from sklearn import linear_model
+from sklearn.model_selection import train_test_split
+
+fX_train, fX_test, fy_train, fy_test = train_test_split(
+    fX, fy, test_size=0.2, random_state=1)
+
+fX_train, fX_val, fy_train, fy_val = train_test_split(
+    fX_train, fy_train, test_size=0.2, random_state=1)
+
+regr = linear_model.LinearRegression()
+
+model = regr.fit(fX_train, fy_train)
+
+fy_predict = mlr.predict(fX_test)
+
+
+print("Train score:")
+print(mlr.score(fX_train, fy_train))
+print("Test score:")
+print(mlr.score(fX_test, fy_test))
+
+residuals = fy_predict - fy_test
+
+plt.scatter(fy_predict, residuals, alpha=0.4)
+plt.title('Residual Analysis')
+
+plt.show()
