@@ -35,9 +35,20 @@ df.body_type.value_counts()
 #%%
 df.income.value_counts()
 
+#%%
+# Creating a new column with total essay length
+essay_cols = ["essay0", "essay1", "essay2", "essay3",
+              "essay4", "essay5", "essay6", "essay7", "essay8", "essay9"]
+
+all_essays = df[essay_cols].replace(np.nan, '', regex=True)
+all_essays = all_essays[essay_cols].apply(lambda x: ' '.join(x), axis=1)
+
+
+df["essay_len"] = all_essays.apply(lambda x: len(x))
+
 # Creating a new dataframe with the data I want: sex, body-type, and income
 #%%
-body_and_income = df[['sex', 'body_type', 'income']].copy()
+body_and_income = df[['sex', 'body_type', 'income', 'essay_len']].copy()
 
 # Checking to make sure that worked (it did)
 print(body_and_income.columns.values)
@@ -98,12 +109,13 @@ m = m.drop(columns=['sex'])
 f = f.drop(columns=['sex'])
 
 # Augmenting data - transforming body-type to body-image
-# A note on methodology: 
-# I assgined labels according to the relative positive/negative connotation of body-type labels
-# This was an unscientific process based on my expeirence as a fiction author
-# 2 = curvy, fit, thin, athletic, full-figured, jacked
-# 1 = average, a little extra, skinny
-# 0 = used up, overweight, rather not say
+
+'''A note on methodology: 
+I assgined labels according to the relative positive/negative connotation of body-type labels
+This was an unscientific process based on my expeirence as a fiction author
+2 = curvy, fit, thin, athletic, full-figured, jacked
+1 = average, a little extra, skinny
+0 = used up, overweight, rather not say'''
 
 #%%
 
@@ -113,13 +125,13 @@ f["body_image"] = f.body_type.map(body_image_mapping)
 #%%
 m["body_image"] = m.body_type.map(body_image_mapping)
 
-# Income-mapping: I've assigned numerical classes to income based on the following:
-# The The median income for 2012 (the year of this dataset) was $28,213, so
-# For $0 - 20,000, income class = 0 (below the meadian income)
-# 20,0001 - 99,999, income class = 1
-# 100,000 - 999,999, income class = 2
-# 1,000,000+, income class = 3
-# Again, these divisions were somewhat arbitrary
+'''Income-mapping: I've assigned numerical classes to income based on the following:
+The The median income for 2012 (the year of this dataset) was $28,213, so
+For $0 - 20,000, income class = 0 (below the meadian income)
+20,0001 - 99,999, income class = 1
+100,000 - 999,999, income class = 2
+1,000,000+, income class = 3
+Again, these divisions were somewhat arbitrary.'''
 
 #%%
 income_mapping = {20000: 0, 30000: 1, 40000: 1, 50000: 1, 60000: 1, 70000: 1,
@@ -136,7 +148,7 @@ f.columns.values
 f.head()
 
 #%%
-# Taking a look at preliminary graphs
+# Taking a look at some preliminary graphs
 plt.plot(m['income'], m['body_image'])
 plt.xlabel("Income")
 plt.ylabel("Body-image")
@@ -157,13 +169,13 @@ plt.show()
 #%%
 from sklearn.preprocessing import MinMaxScaler
 
-m_data = m[['income', 'body_image', 'income_class']]
+m_data = m[['income', 'essay_len', 'body_image', 'income_class']]
 Mx = m_data.values
 min_max_scaler = MinMaxScaler()
 Mx_scaled = min_max_scaler.fit_transform(Mx)
 
 #%%
-f_data = f[['income', 'body_image', 'income_class']]
+f_data = f[['income', 'essay_len', 'body_image', 'income_class']]
 Fx = f_data.values
 min_max_scaler = MinMaxScaler()
 Fx_scaled = min_max_scaler.fit_transform(Fx)
@@ -211,7 +223,7 @@ plt.show()
 # As might be expected, the graphs now create a geometic pattern, with nodes
 # I suspect, from looking at these graphs that it will not be possible to predict income based on body_image, or visa versa
 
- # Performing multiple linear regression:
+ # Performing single variable linear regression:
 #%%
 
 mX = m_data['body_image']
@@ -254,9 +266,6 @@ plt.title('Residual Analysis - Men')
 plt.show()
 
 #%%
-from sklearn import linear_model
-from sklearn.model_selection import train_test_split
-
 fX_train, fX_test, fy_train, fy_test = train_test_split(
     fX, fy, test_size=0.2, random_state=1)
 
@@ -282,11 +291,11 @@ plt.title('Residual Analysis - Women')
 
 plt.show()
 
-# The train scores and test scores are wildly different.
-# I can't even see a point in validating the model.
-# I will, however, test it with income predicting body image, instead.
+'''The train scores and test scores are wildly different.
+I can't even see a point in validating the model.
+I will, however, test it with income predicting body image, instead.'''
 
-#%%
+'''#%%
 
 my2 = m_data['body_image']
 mX2 = m_data['income']
@@ -296,9 +305,6 @@ print(mX)
 
 
 #%%
-from sklearn import linear_model
-from sklearn.model_selection import train_test_split
-
 mX_train, mX_test, my_train, my_test = train_test_split(
     mX2, my2, test_size=0.2, random_state=1)
 
@@ -322,7 +328,54 @@ residuals = my_predict - my_test
 plt.scatter(my_predict, residuals, alpha=0.4)
 plt.title('Residual Analysis - Men (income predicting body image)')
 
+plt.show()'''
+
+#%%
+# As I expected, this doesn't appear any more accurate.
+
+'''At this point, I went back up in my code and added a column for total essay length.
+Since I already see no correlation between income and body_image, 
+it would make sense to perform single variable linear regression again,
+to check for a correlation between essay-length and body-image or income.
+However, the assignmnent calls for two regression approaches, 
+so I will now perform multiple linear regression.'''
+
+# To save time, I will do this fior men only (the larger data sample).
+# Also, to avoid confusion, I'm commenting out my last experiment.
+
+#%%
+
+X_multilinear = m_data[['body_image', 'essay_len']]
+y_multilinear = m_data['income']
+
+#%%
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_multilinear, y_multilinear, test_size=0.2, random_state=1)
+
+X_train, X_val, y_train, y_val = train_test_split(
+    X_train, y_train, test_size=0.2, random_state=1)
+
+regr = linear_model.LinearRegression()
+
+model = regr.fit(X_train, y_train)
+
+y_predict = regr.predict(X_test)
+
+
+print("Train score:")
+print(regr.score(X_train, y_train))
+print("Test score:")
+print(regr.score(X_test, y_test))
+
+residuals = y_predict - y_test
+
+plt.scatter(y_predict, residuals, alpha=0.4)
+plt.title('Residual Analysis - Men (multi-variable)')
+
 plt.show()
 
-# As I expected, this doesn't appear any more accurate.
+# Again, the train and test sets show wildly different scores.
+# There doesn't seem to be a correlation and validating the model would not be productive use of time.
+
 
