@@ -378,4 +378,47 @@ plt.show()
 # Again, the train and test sets show wildly different scores.
 # There doesn't seem to be a correlation and validating the model would not be productive use of time.
 
+# K-means for regression
+#%%
+from sklearn import neighbors
+from sklearn.metrics import mean_squared_error
+from math import sqrt
+%matplotlib inline
 
+rmse_val = []  # to store rmse values for different k
+for K in range(200):
+    K = K+1
+    model = neighbors.KNeighborsRegressor(n_neighbors=K)
+
+    model.fit(X_train, y_train)  # fit the model
+    pred = model.predict(X_test)  # make prediction on test set
+    error = sqrt(mean_squared_error(y_test, pred))  # calculate rmse
+    rmse_val.append(error)  # store rmse values
+    print('RMSE value for k= ', K, 'is:', error)
+
+#%%
+#plotting the rmse values against k values
+curve = pd.DataFrame(rmse_val)  # elbow curve
+curve.plot()
+
+#%%
+K = 74
+model = neighbors.KNeighborsRegressor(n_neighbors=K)
+
+model.fit(X_train, y_train)  # fit the model
+pred = model.predict(X_test)  # make prediction on test set
+error = sqrt(mean_squared_error(y_test, pred))  # calculate rmse
+print('Error for k= ', K, 'is:', error)
+
+# I'm here
+classifier = KNeighborsClassifier(n_neighbors=5)
+
+classifier.fit(movie_dataset, labels)
+
+unknown_movies = [
+    [.45, .2, .5],
+    [.25, .8, .9],
+    [.1, .1, .9]
+]
+
+print(m.predict(unknown_movies))
