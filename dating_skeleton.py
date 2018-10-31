@@ -217,8 +217,14 @@ plt.show()
 mX = m_data['body_image']
 my = m_data['income']
 
+mX = mX.values.reshape(-1, 1)
+print(mX)
+
+#%%
 fX = f_data['body_image']
 fy = f_data['income']
+fX = fX.values.reshape(-1, 1)
+print(fX)
 
 #%%
 from sklearn import linear_model
@@ -230,20 +236,20 @@ mX_train, mX_val, my_train, my_val = train_test_split(mX_train, my_train, test_s
 
 regr = linear_model.LinearRegression()
 
-model=regr.fit(mX_train, my_train)
+model = regr.fit(mX_train, my_train)
 
-my_predict = mlr.predict(mX_test)
+my_predict = regr.predict(mX_test)
 
 
 print("Train score:")
-print(mlr.score(mX_train, my_train))
+print(regr.score(mX_train, my_train))
 print("Test score:")
-print(mlr.score(mX_test, my_test))
+print(regr.score(mX_test, my_test))
 
 residuals = my_predict - my_test
 
 plt.scatter(my_predict, residuals, alpha=0.4)
-plt.title('Residual Analysis')
+plt.title('Residual Analysis - Men')
 
 plt.show()
 
@@ -261,17 +267,62 @@ regr = linear_model.LinearRegression()
 
 model = regr.fit(fX_train, fy_train)
 
-fy_predict = mlr.predict(fX_test)
+fy_predict = regr.predict(fX_test)
 
 
 print("Train score:")
-print(mlr.score(fX_train, fy_train))
+print(regr.score(fX_train, fy_train))
 print("Test score:")
-print(mlr.score(fX_test, fy_test))
+print(regr.score(fX_test, fy_test))
 
 residuals = fy_predict - fy_test
 
 plt.scatter(fy_predict, residuals, alpha=0.4)
-plt.title('Residual Analysis')
+plt.title('Residual Analysis - Women')
 
 plt.show()
+
+# The train scores and test scores are wildly different.
+# I can't even see a point in validating the model.
+# I will, however, test it with income predicting body image, instead.
+
+#%%
+
+my2 = m_data['body_image']
+mX2 = m_data['income']
+
+mX2 = mX2.values.reshape(-1, 1)
+print(mX)
+
+
+#%%
+from sklearn import linear_model
+from sklearn.model_selection import train_test_split
+
+mX_train, mX_test, my_train, my_test = train_test_split(
+    mX2, my2, test_size=0.2, random_state=1)
+
+mX_train, mX_val, my_train, my_val = train_test_split(
+    mX_train, my_train, test_size=0.2, random_state=1)
+
+regr = linear_model.LinearRegression()
+
+model = regr.fit(mX_train, my_train)
+
+my_predict = regr.predict(mX_test)
+
+
+print("Train score:")
+print(regr.score(mX_train, my_train))
+print("Test score:")
+print(regr.score(mX_test, my_test))
+
+residuals = my_predict - my_test
+
+plt.scatter(my_predict, residuals, alpha=0.4)
+plt.title('Residual Analysis - Men (income predicting body image)')
+
+plt.show()
+
+# As I expected, this doesn't appear any more accurate.
+
