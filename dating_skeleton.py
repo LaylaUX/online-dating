@@ -402,7 +402,7 @@ curve = pd.DataFrame(rmse_val)  # elbow curve
 curve.plot()
 
 #%%
-K = 74
+K = 15
 model = neighbors.KNeighborsRegressor(n_neighbors=K)
 
 model.fit(X_train, y_train)  # fit the model
@@ -410,15 +410,17 @@ pred = model.predict(X_test)  # make prediction on test set
 error = sqrt(mean_squared_error(y_test, pred))  # calculate rmse
 print('Error for k= ', K, 'is:', error)
 
-# I'm here
-classifier = KNeighborsClassifier(n_neighbors=5)
+#Validating the model
+#%%
+val = model.predict(X_val)
+error = sqrt(mean_squared_error(y_val, val))  # calculate rmse
+print('Error for k= ', K, 'is:', error)
 
-classifier.fit(movie_dataset, labels)
+# These error values are quite similar, but also quite high.
 
-unknown_movies = [
-    [.45, .2, .5],
-    [.25, .8, .9],
-    [.1, .1, .9]
-]
+# Do I need to calculate accuracy, precision, and recall?
 
-print(m.predict(unknown_movies))
+
+
+
+
