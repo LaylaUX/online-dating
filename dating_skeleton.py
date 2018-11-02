@@ -410,7 +410,7 @@ pred = model.predict(X_test)  # make prediction on test set
 error = sqrt(mean_squared_error(y_test, pred))  # calculate rmse
 print('Error for k= ', K, 'is:', error)
 
-#Validating the model
+# Model accuracy
 #%%
 val = model.predict(X_val)
 error = sqrt(mean_squared_error(y_val, val))  # calculate rmse
@@ -418,7 +418,74 @@ print('Error for k= ', K, 'is:', error)
 
 # These error values are quite similar, but also quite high.
 
-# Do I need to calculate accuracy, precision, and recall?
+#%%
+# Trying classification approaches
+
+# KNN Classification
+# Setting up the data
+
+fX_classification = f_data['body_image']
+fy_classification = f_data['income_class']
+fX_classification = fX_classification.values.reshape(-1, 1)
+print(fX)
+
+#%%
+mX_classification = m_data['body_image']
+my_classification = m_data['income']
+mX_classification = mX_classification.values.reshape(-1, 1)
+print(mX)
+
+#%%
+mX_train, mX_test, my_train, my_test = train_test_split(
+    mX_classification, my_classification, test_size=0.2, random_state=1)
+
+mX_train, mX_val, my_train, my_val = train_test_split(
+    mX_train, my_train, test_size=0.2, random_state=1)
+
+print(len(mX_train))
+print(len(mX_test))
+print(len(mX_val))
+
+#%%
+fX_train, fX_test, fy_train, fy_test = train_test_split(
+    fX_classification, fy_classification, test_size=0.2, random_state=1)
+
+fX_train, fX_val, fy_train, fy_val = train_test_split(
+    fX_train, fy_train, test_size=0.2, random_state=1)
+
+print(len(fX_train))
+print(len(fX_test))
+print(len(fX_val))
+
+# There's just not a whole lot of female data. I'll move forward with the male data.
+
+#%%
+from sklearn.neighbors import KNeighborsClassifier
+
+k = 1
+accuracies = []
+
+for k in range(1, 101):
+  classifier = KNeighborsClassifier(n_neighbors=k)
+  classifier.fit(mX_train, my_train)
+  accuracies.append(classifier.score(mX_val, my_val))
+  k += 1
+
+
+#%%
+import matplotlib.pyplot as plt
+
+k_list = range(1, 101)
+
+plt.plot(k_list, accuracies)
+plt.xlabel("k")
+plt.ylabel("Validation Accuracy")
+plt.title("Body Image as Predictor of Income (KNN validation accuracy)")
+plt.show()
+
+
+
+
 
 
 
