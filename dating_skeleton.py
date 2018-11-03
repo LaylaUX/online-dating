@@ -424,16 +424,45 @@ print('Error for k= ', K, 'is:', error)
 # KNN Classification
 # Setting up the data
 
+# Creating a new income bracket column that is not normalized.
+
+m_data["income_brackets"] = m_data.income_class * 3
+m_data.columns.values
+m_data.head()
+
+#%%
+f_data["income_brackets"] = f_data.income_class * 3
+f_data.columns.values
+f_data.head()
+
+# Creating a new binary income collumn. A person's income is either under or over the average.
+#%%
+income_mapping = {0: 0, 1: 1, 2: 1, 3: 1}
+m_data["income_binary"] = m_data.income_brackets.map(income_mapping)
+
+m_data.columns.values
+m_data.head()
+
+#%%
+f_data["income_binary"] = f_data.income_brackets.map(income_mapping)
+
+f_data.columns.values
+f_data.head()
+
+#%%
 fX_classification = f_data['body_image']
-fy_classification = f_data['income_class']
+fy_classification = f_data['income_binary']
 fX_classification = fX_classification.values.reshape(-1, 1)
 print(fX)
 
 #%%
 mX_classification = m_data['body_image']
-my_classification = m_data['income']
+my_classification = m_data['income_binary']
 mX_classification = mX_classification.values.reshape(-1, 1)
 print(mX)
+
+#%%
+my_classification.value_counts()
 
 #%%
 mX_train, mX_test, my_train, my_test = train_test_split(
@@ -457,6 +486,9 @@ print(len(fX_train))
 print(len(fX_test))
 print(len(fX_val))
 
+#%%
+fy_train.value_counts()
+
 # There's just not a whole lot of female data. I'll move forward with the male data.
 
 #%%
@@ -471,6 +503,8 @@ for k in range(1, 101):
   accuracies.append(classifier.score(mX_val, my_val))
   k += 1
 
+print(accuracies)
+
 
 #%%
 import matplotlib.pyplot as plt
@@ -482,6 +516,42 @@ plt.xlabel("k")
 plt.ylabel("Validation Accuracy")
 plt.title("Body Image as Predictor of Income (KNN validation accuracy)")
 plt.show()
+
+#%%
+# Pinpointing the best k
+
+classifier = KNeighborsClassifier(n_neighbors=5)
+classifier.fit(mX_train, my_train)
+print(classifier.score(mX_val, my_val))
+
+# The best K is 5, with 76% accuracy. 
+
+#%%
+# Checking precision and recall
+
+for i in range(len(mX_train)):
+  #True Positives
+  if my_train[i] == 1 and my_val[i] == 1:
+    true_positives += 1
+  #True Negatives
+  if labels[i] == 0 and guesses[i] == 0:
+    true_negatives += 1
+  #False Positives
+  if labels[i] == 0 and guesses[i] == 1:
+    false_positives += 1
+  #False Negatives
+  if labels[i] == 1 and guesses[i] == 0:
+    false_negatives += 1
+
+accuracy = (true_positives + true_negatives) / len(guesses)
+print(accuracy)
+
+recall = true_positives / (true_positives + false_negatives)
+print(recall)
+
+precision = true_positives / (true_positives + false_positives)
+print(precision)
+
 
 
 
