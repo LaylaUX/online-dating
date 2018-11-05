@@ -524,33 +524,56 @@ classifier = KNeighborsClassifier(n_neighbors=5)
 classifier.fit(mX_train, my_train)
 print(classifier.score(mX_val, my_val))
 
-# The best K is 5, with 76% accuracy. 
+# The best K is 5, with 76% accuracy.
+#(First I tried with 4 income-brackets, with only 47% accuracy)
 
 #%%
-# Checking precision and recall
+# That's better than I expected! I'd like to see a graph of body-image vs binary income. 
+plt.plot(mX_classification, my_classification)
+plt.xlabel("Body-Image")
+plt.ylabel("Income (over or under personal mean)")
+plt.title('Body-image as a predictor of income?')
+plt.show()
 
-for i in range(len(mX_train)):
-  #True Positives
-  if my_train[i] == 1 and my_val[i] == 1:
-    true_positives += 1
-  #True Negatives
-  if labels[i] == 0 and guesses[i] == 0:
-    true_negatives += 1
-  #False Positives
-  if labels[i] == 0 and guesses[i] == 1:
-    false_positives += 1
-  #False Negatives
-  if labels[i] == 1 and guesses[i] == 0:
-    false_negatives += 1
+# Interesting, when I look at the graph, I don't see a correlation...
+# Trying a scatter plot
+#%%
+plt.scatter(mX_classification, my_classification, alpha=0.5)
+plt.show()
 
-accuracy = (true_positives + true_negatives) / len(guesses)
-print(accuracy)
+# There must be a better way to graph this.
 
-recall = true_positives / (true_positives + false_negatives)
-print(recall)
+#%%
+# Checking accuracy, precision and recall
+#I'm here!!! (need to add guesses)
 
-precision = true_positives / (true_positives + false_positives)
-print(precision)
+m_guesses = classifier.predict(mX_test)
+
+true_positives = []
+true_negatives = []
+false_positives = []
+false_negatives = []
+
+#%%
+print(len(m_guesses))
+print(m_guesses)
+
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
+#%%
+print('Accuracy:')
+print(accuracy_score(my_test, m_guesses))
+print('Precision:')
+print(precision_score(my_test, m_guesses, average="macro"))
+print('Recall:')
+print(recall_score(my_test, m_guesses, average="macro"))
+print('F1 score:')
+print(f1_score(my_test, m_guesses, average="macro"))
+
+# Darn, looks like the model just predicts a "1" for income and gets it right 76-77% of the time
+# But precision (38%) and recall (50%) show the breakdown of the model
+# I seem to be getter a cclear answer to my question:
+# Body-image does not apper to be a predictor of income.
 
 
 
