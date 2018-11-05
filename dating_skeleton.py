@@ -162,6 +162,21 @@ plt.ylabel("Body-image")
 plt.title('Women')
 plt.show()
 
+
+#%%
+# Taking a look at some preliminary graphs
+plt.scatter(m['income'], m['body_image'], alpha=0.5)
+plt.xlabel("Income")
+plt.ylabel("Body-image")
+plt.title('Men')
+plt.show()
+
+plt.scatter(f['income'], f['body_image'], alpha=0.5)
+plt.xlabel("Income")
+plt.ylabel("Body-image")
+plt.title('Women')
+plt.show()
+
 # As expected, the men's graph is much more distributed as to income (x-axis)
 # There's also more data for men, which makes for a busier graph
 
