@@ -545,7 +545,6 @@ plt.show()
 
 #%%
 # Checking accuracy, precision and recall
-#I'm here!!! (need to add guesses)
 
 m_guesses = classifier.predict(mX_test)
 
@@ -570,17 +569,45 @@ print(recall_score(my_test, m_guesses, average="macro"))
 print('F1 score:')
 print(f1_score(my_test, m_guesses, average="macro"))
 
-# Darn, looks like the model just predicts a "1" for income and gets it right 76-77% of the time
-# But precision (38%) and recall (50%) show the breakdown of the model
+# Looks like the model just predicts a "1" for income and gets it right 76-77% of the time
+# Darn, lBut precision (38%) and recall (50%) show the breakdown of the model
 # I seem to be getter a cclear answer to my question:
 # Body-image does not apper to be a predictor of income.
 
+#%%
+# Classification technique 2: Support vector Machines
 
+from sklearn.svm import SVC
 
+svm_classifier = SVC(kernel='linear')
+svm_classifier.fit(mX_train, my_train)
+print(classifier.score(mX_val, my_val))
 
+svm_guesses = svm_classifier.predict(mX_test)
 
+#%%
+print(len(svm_guesses))
+print(svm_guesses)
 
+true_positives = []
+true_negatives = []
+false_positives = []
+false_negatives = []
 
+#%%
+print('Accuracy:')
+print(accuracy_score(my_test, svm_guesses))
+print('Precision:')
+print(precision_score(my_test, svm_guesses, average="macro"))
+print('Recall:')
+print(recall_score(my_test, svm_guesses, average="macro"))
+print('F1 score:')
+print(f1_score(my_test, svm_guesses, average="macro"))
 
+# The accuracy, precision, and recall scores are exactly the same as KNNeightbors classifier.
+# I'm assuming the Sports Vector Machine also predicted a 1 across the board.
 
-
+# Further steps:
+# In the future, I'd like to explore this data with unsupervised learning and see what groupings the computer comes up with.
+# Further data: I'd like to see metrics for which of these people find relationships on OKCupid.
+# I'm curious if body-image is a predictor for finding a match, or not.
