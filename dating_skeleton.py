@@ -393,7 +393,7 @@ plt.show()
 # Again, the train and test sets show wildly different scores.
 # There doesn't seem to be a correlation and validating the model would not be productive use of time.
 
-# K-means for regression
+# KNN for regression
 #%%
 from sklearn import neighbors
 from sklearn.metrics import mean_squared_error
