@@ -398,7 +398,6 @@ plt.show()
 from sklearn import neighbors
 from sklearn.metrics import mean_squared_error
 from math import sqrt
-%matplotlib inline
 
 rmse_val = []  # to store rmse values for different k
 for K in range(200):
